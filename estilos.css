@@ -1,0 +1,241 @@
+/* ---------------------------------------------------------------
+   raspa_ — estilos
+   La página va con la identidad de juanchito.dev (asfalto, ácido,
+   cartel y grafiti). El ticket va con el color del negocio (--marca).
+   --------------------------------------------------------------- */
+
+@font-face { font-family: "Anton"; src: url("fuentes/anton.woff2") format("woff2"); font-display: swap; }
+@font-face { font-family: "Grafiti"; src: url("fuentes/sedgwick-ave-display.woff2") format("woff2"); font-display: swap; }
+@font-face { font-family: "Archivo"; font-weight: 400 700; src: url("fuentes/archivo.woff2") format("woff2"); font-display: swap; }
+@font-face { font-family: "Mono"; font-weight: 700; src: url("fuentes/space-mono-wght-700.woff2") format("woff2"); font-display: swap; }
+
+:root {
+  --asfalto: #0b0b0d;
+  --tiza: #f2f0ea;
+  --humo: #9a9aa3;
+  --linea: #3a3a40;
+  --acido: #c6ff3d;
+  --fuego: #ff5a1f;
+  --papel: #fbf7ee;
+  --tinta: #151412;
+  --gris-papel: #6b665d;
+  --marca: #c63a1f;
+  --out: cubic-bezier(0.23, 1, 0.32, 1);
+  --resorte: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; overflow-x: clip; }
+body {
+  margin: 0;
+  background: var(--asfalto);
+  color: var(--tiza);
+  font-family: "Archivo", ui-sans-serif, system-ui, sans-serif;
+  font-size: 1.0625rem;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: clip;
+}
+h1, h2, p { margin: 0; overflow-wrap: anywhere; }
+a { color: inherit; }
+button { font: inherit; color: inherit; cursor: pointer; }
+:focus-visible { outline: 3px solid var(--acido); outline-offset: 3px; }
+main:focus { outline: none; }
+[hidden] { display: none !important; }
+
+.saltar { position: absolute; left: 1rem; top: -5rem; z-index: 60; padding: 0.5rem 0.8rem; background: var(--acido); color: var(--asfalto); }
+.saltar:focus { top: 1rem; }
+
+.cursor { color: var(--fuego); animation: parpadeo 1060ms steps(1, end) infinite; }
+@keyframes parpadeo { 50% { opacity: 0; } }
+
+.firma {
+  display: inline-block;
+  font-family: "Grafiti", cursive;
+  font-style: normal;
+  font-weight: 400;
+  color: var(--acido);
+  rotate: -6deg;
+}
+
+/* ---------- barra ---------- */
+
+.barra {
+  display: flex; justify-content: space-between; align-items: baseline;
+  max-width: 64rem; margin: 0 auto; padding: 1rem 1.25rem;
+  font-size: 0.875rem;
+}
+.logo { font-family: "Anton", sans-serif; font-size: 1.375rem; text-decoration: none; }
+.barra-sonido { background: none; border: 0; color: var(--humo); padding: 0.5rem 0; min-height: 2.75rem; }
+
+/* ---------- inicio ---------- */
+
+#inicio, .jugar, .verificar, .pie { max-width: 64rem; margin: 0 auto; padding-inline: 1.25rem; }
+
+.portada { padding: 2rem 0 1.5rem; }
+.titulo {
+  font-family: "Anton", sans-serif; font-weight: 400;
+  font-size: clamp(4.5rem, 24vw, 11rem); line-height: 0.86; letter-spacing: -0.01em;
+}
+.linea { display: block; overflow: hidden; padding-bottom: 0.06em; }
+.linea > span { display: block; animation: sube 800ms var(--out) both; }
+.linea + .linea > span { animation-delay: 90ms; }
+@keyframes sube { from { transform: translateY(105%) skewY(5deg); } }
+.titulo .firma { font-size: 0.82em; }
+.bajada { margin-top: 1.25rem; max-width: 40ch; color: var(--humo); animation: aparece 700ms var(--out) 250ms both; }
+
+.mesa-caja { display: grid; justify-items: center; gap: 1rem; padding: 1.5rem 0 4rem; }
+.demo-aviso { font-size: 0.8125rem; color: var(--humo); text-align: center; max-width: 34ch; }
+.mesa { display: grid; justify-items: center; gap: 1.25rem; width: 100%; }
+
+/* ---------- el ticket ---------- */
+
+.ticket {
+  position: relative;
+  width: min(22.5rem, 100%);
+  background: var(--papel);
+  color: var(--tinta);
+  border-radius: 20px;
+  box-shadow: 0 30px 60px rgb(0 0 0 / 0.55), 0 2px 0 rgb(255 255 255 / 0.4) inset;
+  /* las muescas de ticket a los lados, a la altura del corte */
+  mask: radial-gradient(circle 13px at 0 74%, transparent 98%, #000) left / 51% 100% no-repeat,
+        radial-gradient(circle 13px at 100% 74%, transparent 98%, #000) right / 51% 100% no-repeat;
+  animation: entra-ticket 900ms var(--resorte) both, flota 5s ease-in-out 900ms infinite;
+}
+@keyframes entra-ticket { from { transform: translateY(40px) rotate(-8deg) scale(0.9); opacity: 0; } }
+@keyframes flota { 50% { transform: translateY(-6px) rotate(-1deg); } }
+.ticket.gano { animation: celebra 700ms var(--resorte) both; }
+.ticket.perdio { animation: nada 500ms ease both; }
+@keyframes celebra { 40% { transform: scale(1.06) rotate(-2deg); } }
+@keyframes nada { 20%, 60% { transform: translateX(-7px); } 40%, 80% { transform: translateX(7px); } }
+
+.ticket-cabeza {
+  display: flex; justify-content: space-between; align-items: center; gap: 0.75rem;
+  padding: 1.1rem 1.25rem; border-radius: 20px 20px 0 0;
+  background: var(--marca); color: #fff;
+}
+.ticket-negocio { font-family: "Anton", sans-serif; font-size: 1.5rem; line-height: 1; text-transform: uppercase; min-width: 0; }
+.ticket-raspa { font-family: "Grafiti", cursive; font-size: 1.15rem; rotate: -6deg; white-space: nowrap; }
+
+.ticket-zona { position: relative; margin: 1.1rem; aspect-ratio: 16 / 11; border-radius: 12px; overflow: hidden; background: #fff; box-shadow: inset 0 0 0 1px rgb(0 0 0 / 0.08); }
+.ticket-premio { position: absolute; inset: 0; display: grid; place-content: center; gap: 0.35rem; padding: 1rem; text-align: center; }
+.premio-arriba { font-family: "Grafiti", cursive; font-size: 1.6rem; line-height: 1; color: var(--marca); rotate: -5deg; }
+.premio-grande { font-family: "Anton", sans-serif; font-size: clamp(1.7rem, 8vw, 2.3rem); line-height: 1.02; text-transform: uppercase; }
+.premio-nada, .premio-error { font-family: "Archivo", sans-serif; font-size: 1.0625rem; text-transform: none; line-height: 1.35; color: var(--gris-papel); }
+
+.ticket-lamina { position: absolute; inset: 0; width: 100%; height: 100%; cursor: grab; }
+.ticket-lamina:active { cursor: grabbing; }
+.ticket-lamina.suelta { animation: suelta 650ms var(--out) forwards; pointer-events: none; }
+@keyframes suelta { to { opacity: 0; transform: scale(1.18) rotate(4deg); filter: blur(4px); } }
+
+.ticket-pie { margin: 0 1.1rem; padding: 0.8rem 0 1.1rem; border-top: 2px dashed #d6cfc0; font-size: 0.8125rem; color: var(--gris-papel); text-align: center; }
+
+/* ---------- después de raspar ---------- */
+
+.ticket-acciones { display: grid; justify-items: center; gap: 0.75rem; width: min(22.5rem, 100%); text-align: center; }
+.acciones-premio { display: grid; justify-items: center; gap: 0.4rem; width: 100%; animation: aparece 600ms var(--out) 250ms both; }
+.codigo-titulo { font-size: 0.8125rem; color: var(--humo); }
+.codigo { font-family: "Mono", ui-monospace, monospace; font-weight: 700; font-size: clamp(1.6rem, 8vw, 2.1rem); letter-spacing: 0.06em; color: var(--acido); }
+
+/* ---------- botones ---------- */
+
+.acciones { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.6rem; margin-top: 0.4rem; }
+.boton, .boton-linea {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-height: 3rem; padding: 0 1.3rem; border-radius: 999px;
+  font-weight: 600; font-size: 0.9375rem; text-decoration: none;
+  transition: transform 200ms var(--resorte);
+}
+.boton { background: var(--acido); color: var(--asfalto); border: 0; }
+.boton-linea { background: transparent; color: var(--tiza); border: 1.5px solid var(--tiza); }
+.boton:active, .boton-linea:active { transform: scale(0.96); }
+.boton:disabled { opacity: 0.5; }
+
+/* ---------- el armador ---------- */
+
+.armador { display: grid; gap: 1.5rem; max-width: 40rem; padding-bottom: 4rem; }
+.armador-titulo { font-family: "Anton", sans-serif; font-weight: 400; font-size: clamp(3rem, 14vw, 6rem); line-height: 0.9; }
+.bloque { margin: 0; padding: 1.5rem 0 0; border: 0; border-top: 1px solid var(--linea); display: grid; gap: 1rem; min-width: 0; }
+.bloque legend { padding: 0; font-weight: 600; font-size: 1.25rem; margin-bottom: 0.25rem; }
+.paso { color: var(--acido); margin-right: 0.3rem; }
+.campo { display: grid; gap: 0.35rem; min-width: 0; }
+.campo > span { font-size: 0.875rem; font-weight: 600; }
+.campo em { font-style: normal; color: var(--humo); font-weight: 400; }
+.campo small { color: var(--humo); font-size: 0.8125rem; }
+input, select {
+  font: inherit; color: var(--tiza); width: 100%; min-height: 3rem;
+  padding: 0.6rem 0.85rem; border: 1px solid var(--linea); border-radius: 10px; background: #141417;
+}
+input[type="range"] { padding: 0; min-height: 2.75rem; accent-color: var(--acido); background: none; border: 0; }
+input[type="date"] { color-scheme: dark; }
+.premios { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.5rem; }
+.premio { display: grid; grid-template-columns: minmax(0, 1fr) 8.5rem 2.75rem; gap: 0.4rem; }
+.quitar { background: none; border: 1px solid var(--linea); border-radius: 10px; color: var(--humo); font-size: 1.3rem; }
+.colores { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.color { position: relative; display: inline-flex; align-items: center; gap: 0.5rem; min-height: 2.75rem; padding: 0.3rem 0.9rem 0.3rem 0.35rem; border: 1px solid var(--linea); border-radius: 999px; cursor: pointer; font-size: 0.9375rem; }
+.color::before { content: ""; width: 1.8rem; height: 1.8rem; border-radius: 50%; background: var(--c); }
+.color[data-c="0"] { --c: #c63a1f; }
+.color[data-c="1"] { --c: #2f6b3f; }
+.color[data-c="2"] { --c: #2a4bd7; }
+.color[data-c="3"] { --c: #6b2d6e; }
+.color input { position: absolute; inset: 0; opacity: 0; min-height: 0; cursor: pointer; }
+.color:has(input:checked) { border-color: var(--acido); box-shadow: inset 0 0 0 1px var(--acido); }
+.color:has(input:focus-visible) { outline: 3px solid var(--acido); outline-offset: 2px; }
+.legal { display: grid; gap: 0.75rem; padding: 1rem 1.1rem; border-left: 3px solid var(--fuego); background: #141417; border-radius: 0 10px 10px 0; font-size: 0.9375rem; color: var(--humo); }
+.legal strong { color: var(--tiza); }
+.check { display: flex; gap: 0.6rem; align-items: flex-start; font-size: 0.9375rem; cursor: pointer; }
+.check input { width: 1.3rem; height: 1.3rem; min-height: 0; margin-top: 0.15rem; accent-color: var(--acido); flex-shrink: 0; }
+.aviso { color: var(--fuego); font-weight: 600; }
+.resultado { display: grid; gap: 1rem; animation: aparece 500ms var(--out) both; }
+.resultado .acciones { justify-content: flex-start; margin-top: 0; }
+
+/* ---------- jugar ---------- */
+
+.jugar { min-height: 80svh; display: grid; align-content: start; gap: 2rem; padding-top: 1.5rem; padding-bottom: 4rem; }
+.jugar-titulo { font-family: "Anton", sans-serif; font-weight: 400; font-size: clamp(2.2rem, 10vw, 4.2rem); line-height: 0.95; text-align: center; }
+.jugar-titulo .firma { font-size: 0.9em; }
+
+/* ---------- verificar ---------- */
+
+.verificar { display: grid; gap: 1.25rem; max-width: 34rem; padding-top: 2rem; padding-bottom: 4rem; }
+.ver-titulo { font-family: "Anton", sans-serif; font-weight: 400; font-size: clamp(2.6rem, 12vw, 4.5rem); line-height: 0.95; }
+.ver-form { display: grid; gap: 0.75rem; justify-items: start; }
+.ver-form .campo { width: 100%; }
+.ver-form input { font-family: "Mono", monospace; font-size: 1.5rem; letter-spacing: 0.08em; text-transform: uppercase; }
+.ver-resultado { min-height: 2.5rem; font-family: "Anton", sans-serif; font-size: 1.9rem; line-height: 1.05; }
+.ver-resultado.valido { color: var(--acido); }
+.ver-resultado.invalido { color: var(--fuego); }
+
+/* ---------- comunes ---------- */
+
+.nota { font-size: 0.8125rem; color: var(--humo); max-width: 44ch; }
+.efectos { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 50; }
+.toast {
+  position: fixed; left: 50%; bottom: 1.5rem; z-index: 70;
+  padding: 0.7rem 1.1rem; border-radius: 999px; background: var(--tiza); color: var(--asfalto);
+  font-weight: 600; font-size: 0.9375rem; pointer-events: none;
+  opacity: 0; transform: translate(-50%, 1rem);
+  transition: opacity 200ms ease, transform 400ms var(--resorte);
+}
+.toast.visible { opacity: 1; transform: translate(-50%, 0); }
+.pie { padding-top: 2rem; padding-bottom: 3rem; font-size: 0.8125rem; color: var(--humo); }
+@keyframes aparece { from { opacity: 0; transform: translateY(12px); } }
+
+@media (hover: hover) and (pointer: fine) {
+  .boton:hover, .boton-linea:hover { transform: rotate(-1.5deg) scale(1.04); }
+}
+
+@media (min-width: 52rem) {
+  #inicio { display: grid; grid-template-columns: 1.1fr 0.9fr; column-gap: 3rem; }
+  .portada { padding-top: 4rem; }
+  .mesa-caja { grid-row: span 2; align-self: start; padding-top: 4rem; position: sticky; top: 1rem; }
+  .armador { grid-column: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 1ms !important; animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important; transition-duration: 1ms !important;
+  }
+  .cursor { animation: none; }
+}

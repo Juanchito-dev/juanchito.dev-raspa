@@ -1,0 +1,9 @@
+{
+  "name": "raspa",
+  "private": true,
+  "type": "module",
+  "description": "raspa_ — raspa y gana para negocios. Una herramienta de juanchito.dev.",
+  "engines": {
+    "node": ">=20"
+  }
+}

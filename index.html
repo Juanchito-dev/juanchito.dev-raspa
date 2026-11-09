@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>raspa_ — raspa y gana para tu negocio</title>
+    <meta
+      name="description"
+      content="Arma la promoción de tu negocio y comparte un link: tus clientes raspan con el dedo, y quien gana reclama su premio por WhatsApp con un código que no se puede falsificar."
+    />
+    <meta name="theme-color" content="#0b0b0d" />
+    <link rel="preload" href="fuentes/anton.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="stylesheet" href="estilos.css" />
+    <script type="module" src="js/app.js"></script>
+  </head>
+  <body>
+    <a class="saltar" href="#principal">saltar al contenido</a>
+
+    <header class="barra">
+      <a class="logo" href="./">raspa<span class="cursor" aria-hidden="true">_</span></a>
+      <button type="button" id="sonido" class="barra-sonido" aria-pressed="true">sonido: sí</button>
+    </header>
+
+    <main id="principal" tabindex="-1">
+      <!-- ================= inicio: demostración + armador ================= -->
+      <section id="inicio" hidden>
+        <div class="portada">
+          <h1 class="titulo">
+            <span class="linea"><span>raspa</span></span>
+            <span class="linea"><span>y <em class="firma">gana</em></span></span>
+          </h1>
+          <p class="bajada">
+            La promoción de tu negocio en un link. Tus clientes raspan con el dedo, y quien
+            gana te escribe por WhatsApp con un código que no se puede falsificar.
+          </p>
+        </div>
+
+        <div class="mesa-caja">
+          <p class="demo-aviso">
+            Pruébala: es una demostración. Café Tostado no existe y aquí no hay premios reales.
+          </p>
+          <div id="mesa-demo" class="mesa"></div>
+          <button type="button" id="otra-vez" class="boton-linea" hidden>raspar otra</button>
+        </div>
+
+        <form id="armador" class="armador" novalidate>
+          <div class="armador-vista">
+            <h2 class="armador-titulo">arma la <em class="firma">tuya</em></h2>
+          </div>
+
+          <fieldset class="bloque">
+            <legend><span class="paso">01</span> tu negocio</legend>
+            <label class="campo"><span>nombre</span><input name="negocio" maxlength="40" autocomplete="organization" placeholder="Ej: Panadería La Esquina" /></label>
+            <label class="campo">
+              <span>whatsapp donde te reclaman los premios</span>
+              <input name="whatsapp" inputmode="tel" maxlength="20" placeholder="Ej: 57 300 123 4567" />
+              <small>Con el indicativo del país, sin el +.</small>
+            </label>
+            <div class="campo">
+              <span id="color-titulo">color</span>
+              <div class="colores" role="radiogroup" aria-labelledby="color-titulo">
+                <label class="color" data-c="0"><input type="radio" name="color" value="0" checked /><span>tomate</span></label>
+                <label class="color" data-c="1"><input type="radio" name="color" value="1" /><span>bosque</span></label>
+                <label class="color" data-c="2"><input type="radio" name="color" value="2" /><span>cobalto</span></label>
+                <label class="color" data-c="3"><input type="radio" name="color" value="3" /><span>uva</span></label>
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset class="bloque">
+            <legend><span class="paso">02</span> los premios</legend>
+            <ol id="premios" class="premios"></ol>
+            <button type="button" id="agregar-premio" class="boton-linea">+ otro premio</button>
+            <label class="campo">
+              <span>¿cuántos ganan?</span>
+              <input name="probabilidad" type="range" min="1" max="100" value="20" />
+              <small id="prob-texto"></small>
+            </label>
+            <label class="campo"><span>a quien no gana le dices <em>(opcional)</em></span><input name="mensaje" maxlength="80" placeholder="Ej: Vuelve mañana, hay más" /></label>
+            <label class="campo"><span>la promoción termina el</span><input name="fecha" type="date" /></label>
+          </fieldset>
+
+          <fieldset class="bloque">
+            <legend><span class="paso">03</span> antes de publicarla</legend>
+            <div class="legal">
+              <p>
+                En Colombia, una promoción donde el premio depende del azar es un
+                <strong>juego promocional</strong> y la regula Coljuegos (Ley 643 de 2001): por lo
+                general necesita autorización previa. Confírmalo con tu contador o un abogado antes
+                de entregar premios.
+              </p>
+              <p>
+                Cada teléfono juega una vez, pero alguien con otro teléfono o en modo incógnito puede
+                volver a jugar. Para premios grandes, pide algo más al reclamar (una compra, su cédula).
+              </p>
+            </div>
+            <label class="check"><input type="checkbox" name="legal" /> Lo leí y la responsabilidad de la promoción es mía.</label>
+          </fieldset>
+
+          <p id="aviso-armador" class="aviso" role="alert" hidden></p>
+          <button type="submit" class="boton">crear mi promoción</button>
+
+          <div id="resultado-armador" class="resultado" hidden>
+            <label class="campo">
+              <span>el link para tus clientes: ponlo en tu bio, tus estados o un QR en el mostrador</span>
+              <input id="link-jugar" readonly />
+            </label>
+            <div class="acciones">
+              <button type="button" id="copiar-jugar" class="boton">copiar link</button>
+              <a id="abrir-jugar" class="boton-linea" target="_blank" rel="noopener">abrirla</a>
+            </div>
+            <label class="campo">
+              <span>tu link para revisar códigos antes de entregar un premio (guárdalo, no lo compartas)</span>
+              <input id="link-verificar" readonly />
+            </label>
+            <div class="acciones">
+              <button type="button" id="copiar-verificar" class="boton-linea">copiar link de revisar</button>
+            </div>
+          </div>
+        </form>
+      </section>
+
+      <!-- ================= la tarjeta de un cliente ================= -->
+      <section id="jugar" class="jugar" hidden aria-labelledby="jugar-titulo">
+        <h1 id="jugar-titulo" class="jugar-titulo"><span id="jugar-negocio"></span> te regala un <em class="firma">raspa y gana</em></h1>
+        <div id="mesa-jugar" class="mesa"></div>
+      </section>
+
+      <!-- ================= verificar códigos ================= -->
+      <section id="verificar" class="verificar" hidden aria-labelledby="ver-titulo">
+        <h1 id="ver-titulo" class="ver-titulo">revisar un código</h1>
+        <p class="bajada">Promoción de <strong id="ver-negocio"></strong>. Antes de entregar un premio, escribe aquí el código.</p>
+        <form id="form-verificar" class="ver-form" novalidate>
+          <label class="campo"><span>código</span><input name="codigo" maxlength="14" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="XXXXX-XXXXX" /></label>
+          <button type="submit" class="boton">revisar</button>
+        </form>
+        <p id="ver-resultado" class="ver-resultado" role="status" aria-live="polite"></p>
+        <p class="nota">
+          Esto dice si el código lo dio tu promoción y para qué premio. No lleva la cuenta de los ya
+          entregados: anótalos, para que nadie reclame dos veces con el mismo.
+        </p>
+      </section>
+
+      <section id="roto" class="verificar" hidden>
+        <h1 class="ver-titulo">este link no abre</h1>
+        <p class="bajada">Puede que se haya cortado al copiarlo. Pídele al negocio que te lo mande otra vez.</p>
+      </section>
+    </main>
+
+    <p id="toast" class="toast" role="status" aria-live="polite"></p>
+
+    <footer class="pie">
+      <p>raspa_ es una herramienta de <a href="https://juanchito.dev" target="_blank" rel="noopener">juanchito.dev</a>. El sorteo lo hace el servidor, no tu teléfono.</p>
+    </footer>
+
+    <!-- Plantillas: se clonan y se rellenan con textContent. -->
+    <template id="t-ticket">
+      <article class="ticket">
+        <header class="ticket-cabeza">
+          <p class="ticket-negocio"></p>
+          <p class="ticket-raspa">raspa y gana</p>
+        </header>
+        <div class="ticket-zona">
+          <div class="ticket-premio" aria-live="polite"><p class="premio-arriba">…</p></div>
+          <canvas class="ticket-lamina" role="img" aria-label="Lámina plateada: ráspala con el dedo o usa el botón de abajo"></canvas>
+        </div>
+        <footer class="ticket-pie"><span class="ticket-vence"></span></footer>
+      </article>
+    </template>
+
+    <template id="t-acciones">
+      <div class="ticket-acciones">
+        <button type="button" class="descubrir boton-linea">descubrir sin raspar</button>
+        <p class="ya-jugo nota" hidden>Ya jugaste con este teléfono: esto fue lo que te salió.</p>
+        <div class="acciones-premio" hidden>
+          <p class="codigo-titulo">tu código</p>
+          <p class="codigo"></p>
+          <p class="codigo-nota nota"></p>
+          <div class="acciones">
+            <a class="reclamar boton" target="_blank" rel="noopener">reclamar por whatsapp</a>
+            <button type="button" class="copiar boton-linea">copiar código</button>
+            <button type="button" class="cupon boton-linea">guardar cupón</button>
+          </div>
+        </div>
+      </div>
+    </template>
+
+    <template id="t-premio">
+      <li class="premio">
+        <input maxlength="40" placeholder="Ej: Un pan gratis" aria-label="premio" />
+        <select aria-label="qué tan seguido sale">
+          <option value="seguido">sale seguido</option>
+          <option value="a veces">a veces</option>
+          <option value="poco">casi nunca</option>
+        </select>
+        <button type="button" class="quitar" aria-label="quitar premio">×</button>
+      </li>
+    </template>
+  </body>
+</html>
