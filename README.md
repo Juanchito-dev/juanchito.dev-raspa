@@ -7,7 +7,7 @@ mueve al inclinar el teléfono, escamas que caen, sonido de raspado y
 vibración. Quien gana ve confeti, su premio y un código, y lo reclama por
 WhatsApp o guarda el cupón en imagen.
 
-Un proyecto de [juanchito.dev](https://juanchito.dev).
+Un proyecto de [juanchito.dev](https://juanchito-dev.vercel.app/).
 
 ## Por qué no se puede hacer trampa
 
