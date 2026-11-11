@@ -9,6 +9,15 @@
       content="Arma la promoción de tu negocio y comparte un link: tus clientes raspan con el dedo, y quien gana reclama su premio por WhatsApp con un código que no se puede falsificar."
     />
     <meta name="theme-color" content="#0b0b0d" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="es_CO" />
+    <meta property="og:site_name" content="raspa_ · juanchito.dev" />
+    <meta property="og:title" content="raspa_ — raspa y gana para tu negocio" />
+    <meta
+      property="og:description"
+      content="Arma un raspa y gana con tus premios y compártelo en un link. Quien gana te escribe por WhatsApp con un código que tú revisas."
+    />
+    <meta name="twitter:card" content="summary" />
     <link rel="preload" href="fuentes/anton.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="stylesheet" href="estilos.css" />
     <script type="module" src="js/app.js"></script>
@@ -33,6 +42,10 @@
             La promoción de tu negocio en un link. Tus clientes raspan con el dedo, y quien
             gana te escribe por WhatsApp con un código que no se puede falsificar.
           </p>
+          <div class="portada-acciones">
+            <button type="button" class="boton ir-armador">arma tu promoción</button>
+            <p class="nota">Gratis y sin crear cuenta.</p>
+          </div>
         </div>
 
         <div class="mesa-caja">
@@ -40,12 +53,31 @@
             Pruébala: es una demostración. Café Tostado no existe y aquí no hay premios reales.
           </p>
           <div id="mesa-demo" class="mesa"></div>
+          <div id="puente" class="puente" hidden>
+            <p>Esto mismo, con tus premios y tu WhatsApp.</p>
+            <button type="button" class="boton ir-armador">arma la tuya</button>
+          </div>
           <button type="button" id="otra-vez" class="boton-linea" hidden>raspar otra</button>
         </div>
 
+        <section class="como" aria-labelledby="como-titulo">
+          <h2 id="como-titulo" class="como-titulo">así <em class="firma">funciona</em></h2>
+          <ol class="pasos">
+            <li><strong>Arma la promoción.</strong> Pones los premios, cuántos ganan y hasta cuándo. Te llevas un link.</li>
+            <li><strong>Compártelo.</strong> En tu bio, en tus estados de WhatsApp o en un QR en el mostrador.</li>
+            <li><strong>Tus clientes raspan.</strong> Quien gana te escribe por WhatsApp con su código, y tú lo revisas antes de entregar el premio.</li>
+          </ol>
+          <h3 class="como-sub">nadie puede hacer trampa</h3>
+          <ul class="garantias">
+            <li>El sorteo lo hace el servidor, con azar criptográfico. Mirar el código de la página no sirve para ganar.</li>
+            <li>El link va firmado. Si alguien lo edita para que todos ganen, el servidor no sortea.</li>
+            <li>Cada código ganador va atado a tu promoción y a su premio. Lo revisas en tu link privado antes de entregar.</li>
+          </ul>
+        </section>
+
         <form id="armador" class="armador" novalidate>
           <div class="armador-vista">
-            <h2 class="armador-titulo">arma la <em class="firma">tuya</em></h2>
+            <h2 class="armador-titulo" tabindex="-1">arma la <em class="firma">tuya</em></h2>
           </div>
 
           <fieldset class="bloque">
@@ -124,6 +156,9 @@
       <section id="jugar" class="jugar" hidden aria-labelledby="jugar-titulo">
         <h1 id="jugar-titulo" class="jugar-titulo"><span id="jugar-negocio"></span> te regala un <em class="firma">raspa y gana</em></h1>
         <div id="mesa-jugar" class="mesa"></div>
+        <p id="hecho-con" class="nota hecho-con" hidden>
+          ¿Tienes un negocio? <a href="./">Haz tu propio raspa y gana</a>, gratis.
+        </p>
       </section>
 
       <!-- ================= verificar códigos ================= -->
@@ -151,6 +186,7 @@
 
     <footer class="pie">
       <p>raspa_ es una herramienta de <a href="https://juanchito.dev" target="_blank" rel="noopener">juanchito.dev</a>. El sorteo lo hace el servidor, no tu teléfono.</p>
+      <p>¿Tu negocio necesita un bot o una herramienta a la medida? <a href="https://juanchito.dev" target="_blank" rel="noopener">Escríbeme en juanchito.dev</a>.</p>
     </footer>
 
     <!-- Plantillas: se clonan y se rellenan con textContent. -->
@@ -187,7 +223,7 @@
 
     <template id="t-premio">
       <li class="premio">
-        <input maxlength="40" placeholder="Ej: Un pan gratis" aria-label="premio" />
+        <input maxlength="40" placeholder="Ej: Pan gratis" aria-label="premio" />
         <select aria-label="qué tan seguido sale">
           <option value="seguido">sale seguido</option>
           <option value="a veces">a veces</option>

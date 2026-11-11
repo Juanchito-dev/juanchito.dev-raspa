@@ -84,6 +84,24 @@ main:focus { outline: none; }
 .titulo .firma { font-size: 0.82em; }
 .bajada { margin-top: 1.25rem; max-width: 40ch; color: var(--humo); animation: aparece 700ms var(--out) 250ms both; }
 
+.portada-acciones { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem 1rem; margin-top: 1.5rem; animation: aparece 700ms var(--out) 350ms both; }
+
+.puente { display: grid; justify-items: center; gap: 0.6rem; text-align: center; animation: aparece 600ms var(--out) 400ms both; }
+.puente p { font-weight: 600; }
+
+/* ---------- así funciona ---------- */
+
+.como { display: grid; gap: 1.25rem; max-width: 40rem; padding-bottom: 3.5rem; }
+.como-titulo { font-family: "Anton", sans-serif; font-weight: 400; font-size: clamp(2.6rem, 12vw, 4.5rem); line-height: 0.95; }
+.como-sub { margin: 0.75rem 0 0; font-size: 1.25rem; font-weight: 600; }
+.pasos, .garantias { margin: 0; padding: 0; list-style: none; display: grid; gap: 0.9rem; color: var(--humo); }
+.pasos { counter-reset: paso; }
+.pasos li { counter-increment: paso; position: relative; padding-left: 2.25rem; }
+.pasos li::before { content: "0" counter(paso); position: absolute; left: 0; color: var(--acido); font-weight: 600; }
+.pasos strong { color: var(--tiza); }
+.garantias li { padding-left: 1.1rem; border-left: 2px solid var(--linea); }
+.armador-titulo:focus { outline: none; }
+
 .mesa-caja { display: grid; justify-items: center; gap: 1rem; padding: 1.5rem 0 4rem; }
 .demo-aviso { font-size: 0.8125rem; color: var(--humo); text-align: center; max-width: 34ch; }
 .mesa { display: grid; justify-items: center; gap: 1.25rem; width: 100%; }
@@ -169,7 +187,7 @@ input, select {
 input[type="range"] { padding: 0; min-height: 2.75rem; accent-color: var(--acido); background: none; border: 0; }
 input[type="date"] { color-scheme: dark; }
 .premios { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.5rem; }
-.premio { display: grid; grid-template-columns: minmax(0, 1fr) 10.5rem 2.75rem; gap: 0.4rem; }
+.premio { display: grid; grid-template-columns: minmax(0, 1fr) 9.25rem 2.75rem; gap: 0.4rem; }
 .quitar { background: none; border: 1px solid var(--linea); border-radius: 10px; color: var(--humo); font-size: 1.3rem; }
 .colores { display: flex; flex-wrap: wrap; gap: 0.5rem; }
 .color { position: relative; display: inline-flex; align-items: center; gap: 0.5rem; min-height: 2.75rem; padding: 0.3rem 0.9rem 0.3rem 0.35rem; border: 1px solid var(--linea); border-radius: 999px; cursor: pointer; font-size: 0.9375rem; }
@@ -194,6 +212,7 @@ input[type="date"] { color-scheme: dark; }
 .jugar { min-height: 80svh; display: grid; align-content: start; gap: 2rem; padding-top: 1.5rem; padding-bottom: 4rem; }
 .jugar-titulo { font-family: "Anton", sans-serif; font-weight: 400; font-size: clamp(2.2rem, 10vw, 4.2rem); line-height: 0.95; text-align: center; }
 .jugar-titulo .firma { font-size: 0.9em; }
+.hecho-con { justify-self: center; text-align: center; animation: aparece 600ms var(--out) 900ms both; }
 
 /* ---------- verificar ---------- */
 
@@ -218,7 +237,7 @@ input[type="date"] { color-scheme: dark; }
   transition: opacity 200ms ease, transform 400ms var(--resorte);
 }
 .toast.visible { opacity: 1; transform: translate(-50%, 0); }
-.pie { padding-top: 2rem; padding-bottom: 3rem; font-size: 0.8125rem; color: var(--humo); }
+.pie { display: grid; gap: 0.5rem; padding-top: 2rem; padding-bottom: 3rem; font-size: 0.8125rem; color: var(--humo); }
 @keyframes aparece { from { opacity: 0; transform: translateY(12px); } }
 
 @media (hover: hover) and (pointer: fine) {
@@ -229,7 +248,8 @@ input[type="date"] { color-scheme: dark; }
   #inicio { display: grid; grid-template-columns: 1.1fr 0.9fr; column-gap: 3rem; }
   .portada { padding-top: 4rem; }
   .mesa-caja { grid-row: span 2; align-self: start; padding-top: 4rem; position: sticky; top: 1rem; }
-  .armador { grid-column: 1; }
+  .como, .armador { grid-column: 1; }
+  .como { padding-top: 3rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {

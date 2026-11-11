@@ -438,7 +438,15 @@ async function enrutar() {
     document.title = `raspa y gana — ${promo.n}`;
     mostrar("jugar");
     $("#jugar-negocio").textContent = promo.n;
-    actual = await montarTicket($("#mesa-jugar"), promo, { modo: "real", token });
+    $("#hecho-con").hidden = true;
+    actual = await montarTicket($("#mesa-jugar"), promo, {
+      modo: "real",
+      token,
+      // después de jugar, una invitación discreta para otros negocios
+      alTerminar: () => {
+        $("#hecho-con").hidden = false;
+      },
+    });
     return;
   }
   document.title = "raspa_ — raspa y gana para tu negocio";
@@ -449,9 +457,11 @@ async function enrutar() {
       modo: "demo",
       alTerminar: () => {
         $("#otra-vez").hidden = false;
+        $("#puente").hidden = false;
       },
     });
     $("#otra-vez").hidden = true;
+    $("#puente").hidden = true;
   };
   $("#otra-vez").onclick = montarDemo;
   await document.fonts.ready;
@@ -470,6 +480,15 @@ $(".saltar").addEventListener("click", (e) => {
   e.preventDefault();
   $("#principal").focus();
 });
+
+// Ir al armador sin ancla (el hash es la promoción): se desplaza y lleva el foco al título.
+for (const b of document.querySelectorAll(".ir-armador")) {
+  b.addEventListener("click", () => {
+    const quieto = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    $("#armador").scrollIntoView({ behavior: quieto ? "auto" : "smooth", block: "start" });
+    $(".armador-titulo").focus({ preventScroll: true });
+  });
+}
 
 iniciarArmador();
 addEventListener("hashchange", enrutar);
