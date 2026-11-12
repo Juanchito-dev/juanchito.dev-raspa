@@ -2,10 +2,11 @@
 
 **Raspa y gana para negocios.** El negocio arma su promoción (premios, qué
 tan seguido sale cada uno, cuántos ganan, hasta cuándo) y recibe un link.
-Sus clientes lo abren y raspan una lámina plateada con el dedo: brillo que se
-mueve al inclinar el teléfono, escamas que caen, sonido de raspado y
-vibración. Quien gana ve confeti, su premio y un código, y lo reclama por
-WhatsApp o guarda el cupón en imagen.
+Sus clientes lo abren y raspan una lámina tornasol con el dedo: brillo que se
+mueve al inclinar el teléfono, escamas y chispas que saltan, una barra que
+dice cuánto falta, sonido que sube de tono y vibración. Quien gana ve el
+ticket encenderse, confeti por tandas, una fanfarria, su premio y un código
+que cae letra por letra, y lo reclama por WhatsApp o guarda el cupón en imagen.
 
 Un proyecto de [juanchito.dev](https://juanchito-dev.vercel.app/).
 
@@ -52,8 +53,8 @@ pero crear promociones devuelve un aviso.
 | `index.html`     | Vistas: inicio (demo + armador), jugar, verificar, link roto.  |
 | `estilos.css`    | La página con la identidad de juanchito.dev; el ticket, con el color del negocio. |
 | `js/app.js`      | Vistas, ticket, armador, verificación, cupón.                  |
-| `js/lamina.js`   | La lámina: metal, brillo con la inclinación, raspado, cuánto falta. |
-| `js/efectos.js`  | Escamas, confeti, sonido (WebAudio) y vibración.               |
+| `js/lamina.js`   | La lámina: metal tornasol, brillo con la inclinación, destellos, raspado, cuánto falta. |
+| `js/efectos.js`  | Escamas, chispas, confeti, sonidos sintetizados (WebAudio) y vibración. |
 | `lib/firma.js`   | Firmas, validación, códigos y sorteo. Sólo corre en el servidor. |
 | `api/crear.js`   | Firma una promoción nueva.                                     |
 | `api/raspar.js`  | El sorteo.                                                     |

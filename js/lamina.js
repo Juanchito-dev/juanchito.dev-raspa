@@ -2,11 +2,12 @@
  * La lámina metálica que se raspa.
  *
  * Tres capas en canvas:
- *   - textura: el metal (degradado plateado, grano y "RASPA AQUÍ" en relieve),
- *     se pinta una sola vez;
+ *   - textura: el metal (plateado tornasol, grano, estrellas y "RASPA AQUÍ"
+ *     en relieve), se pinta una sola vez;
  *   - máscara: dónde todavía hay lámina. Raspar es borrar aquí;
- *   - la visible: cada cuadro = textura + brillo que se mueve con la
- *     inclinación del teléfono (o el mouse), recortada por la máscara.
+ *   - la visible: cada cuadro = textura + brillo y tornasol que se mueven
+ *     con la inclinación del teléfono (o el mouse) + destellos que titilan,
+ *     todo recortado por la máscara.
  *
  * Cuando queda menos del 45 % cubierto, la lámina se suelta sola.
  * Quien no puede raspar con el dedo (teclado, lector de pantalla) tiene el
@@ -14,14 +15,18 @@
  */
 
 const UMBRAL = 0.45;
+const quieto = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 export class Lamina {
-  constructor(canvas, { alEmpezar, alRaspar, alDescubrir, color = "#9a9aa3" } = {}) {
+  constructor(canvas, { alEmpezar, alRaspar, alDescubrir, alAvanzar, color = "#9a9aa3" } = {}) {
     this.canvas = canvas;
     this.ctx = canvas.getContext("2d");
     this.alEmpezar = alEmpezar;
     this.alRaspar = alRaspar;
     this.alDescubrir = alDescubrir;
+    this.alAvanzar = alAvanzar;
+    // destellos que titilan sobre la lámina: posición (0 a 1), fase y ritmo
+    this.destellos = Array.from({ length: quieto ? 0 : 7 }, (_, i) => ({ x: Math.random(), y: Math.random(), fase: i * 1.3, ritmo: 1.6 + Math.random() * 1.4, t: 0 }));
     this.color = color;
     this.empezo = false;
     this.terminada = false;
@@ -72,6 +77,14 @@ export class Lamina {
     g.addColorStop(1, "#9ea2ab");
     c.fillStyle = g;
     c.fillRect(0, 0, w, h);
+    // vetas tornasol fijas: rosa, cielo y oro, muy suaves
+    const v = c.createLinearGradient(0, h, w, 0);
+    v.addColorStop(0, "rgba(255,61,154,0.16)");
+    v.addColorStop(0.35, "rgba(61,240,255,0.14)");
+    v.addColorStop(0.65, "rgba(255,210,63,0.18)");
+    v.addColorStop(1, "rgba(198,255,61,0.14)");
+    c.fillStyle = v;
+    c.fillRect(0, 0, w, h);
 
     // grano metálico: puntitos claros y oscuros (fijo, no cambia por cuadro)
     const img = c.getImageData(0, 0, w, h);
@@ -96,10 +109,10 @@ export class Lamina {
     for (let y = -h; y < h; y += tam * 2.2) {
       for (let x = -w; x < w; x += tam * 7.5) {
         const dx = (Math.round(y / (tam * 2.2)) % 2) * tam * 3.7;
-        c.fillStyle = "rgba(255,255,255,0.55)";
-        c.fillText("RASPA AQUÍ", x + dx - 1, y - 1);
-        c.fillStyle = "rgba(60,62,70,0.35)";
-        c.fillText("RASPA AQUÍ", x + dx + 1, y + 1);
+        c.fillStyle = "rgba(255,255,255,0.6)";
+        c.fillText("RASPA AQUÍ ★", x + dx - 1, y - 1);
+        c.fillStyle = "rgba(50,52,64,0.42)";
+        c.fillText("RASPA AQUÍ ★", x + dx + 1, y + 1);
       }
     }
     c.restore();
@@ -124,24 +137,56 @@ export class Lamina {
     ctx.drawImage(this.textura, 0, 0);
 
     // el brillo: una banda que cruza según la inclinación, y respira despacio
-    const deriva = Math.sin(ahora / 1600) * 0.15;
+    const deriva = quieto ? 0 : Math.sin(ahora / 1600) * 0.15;
     const px = (0.5 + this.inclinacion.x * 0.9 + deriva) * w;
     const py = (0.5 + this.inclinacion.y * 0.6) * h;
     const b = ctx.createLinearGradient(px - w * 0.5, py - h, px + w * 0.5, py + h);
     b.addColorStop(0, "rgba(255,255,255,0)");
     b.addColorStop(0.45, "rgba(255,255,255,0)");
-    b.addColorStop(0.5, "rgba(255,255,255,0.75)");
+    b.addColorStop(0.5, "rgba(255,255,255,0.85)");
     b.addColorStop(0.55, "rgba(255,255,255,0)");
+    b.addColorStop(0.68, "rgba(255,255,255,0)");
+    b.addColorStop(0.7, "rgba(255,255,255,0.4)");
+    b.addColorStop(0.72, "rgba(255,255,255,0)");
     b.addColorStop(1, "rgba(255,255,255,0)");
     ctx.fillStyle = b;
     ctx.fillRect(0, 0, w, h);
     // un toque de arcoíris, como las láminas de verdad
-    const a = ctx.createLinearGradient(0, py - h, w, py + h);
-    a.addColorStop(0, "rgba(255,120,200,0.10)");
-    a.addColorStop(0.5, "rgba(120,220,255,0.12)");
-    a.addColorStop(1, "rgba(200,255,120,0.10)");
+    const a = ctx.createLinearGradient(px - w, py - h, px + w, py + h);
+    a.addColorStop(0, "rgba(255,61,154,0.20)");
+    a.addColorStop(0.3, "rgba(255,210,63,0.20)");
+    a.addColorStop(0.5, "rgba(61,240,255,0.22)");
+    a.addColorStop(0.7, "rgba(198,255,61,0.20)");
+    a.addColorStop(1, "rgba(255,61,154,0.20)");
     ctx.fillStyle = a;
     ctx.fillRect(0, 0, w, h);
+
+    // destellos de cuatro puntas que aparecen, titilan y cambian de sitio
+    ctx.fillStyle = "#fff";
+    for (const d of this.destellos) {
+      const fuerza = Math.sin((ahora / 1000) * d.ritmo + d.fase);
+      if (fuerza <= 0) {
+        if (d.t) {
+          d.x = Math.random();
+          d.y = Math.random();
+          d.t = 0;
+        }
+        continue;
+      }
+      d.t = 1;
+      const r = fuerza * fuerza * 11 * this.escala;
+      const x = (0.06 + d.x * 0.88) * w;
+      const y = (0.08 + d.y * 0.84) * h;
+      ctx.globalAlpha = fuerza;
+      ctx.beginPath();
+      ctx.moveTo(x, y - r);
+      ctx.quadraticCurveTo(x, y, x + r, y);
+      ctx.quadraticCurveTo(x, y, x, y + r);
+      ctx.quadraticCurveTo(x, y, x - r, y);
+      ctx.quadraticCurveTo(x, y, x, y - r);
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
 
     ctx.globalCompositeOperation = "destination-in";
     ctx.drawImage(this.mascara, 0, 0);
@@ -181,6 +226,7 @@ export class Lamina {
         this.inclinacion = { x: (e.clientX - r.left) / r.width - 0.5, y: (e.clientY - r.top) / r.height - 0.5 };
         return;
       }
+      if (this.terminada) return;
       const p = punto(e);
       const velocidad = Math.hypot(p.cx - this.ultimo.cx, p.cy - this.ultimo.cy);
       this.borrar(this.ultimo, p);
@@ -239,7 +285,10 @@ export class Lamina {
     const d = c.getImageData(0, 0, 40, 24).data;
     let cubierto = 0;
     for (let i = 3; i < d.length; i += 4) if (d[i] > 128) cubierto++;
-    if (cubierto / (40 * 24) < UMBRAL) this.descubrir();
+    const queda = cubierto / (40 * 24);
+    // avance de 0 a 1: llega a 1 justo cuando la lámina se suelta
+    this.alAvanzar?.(Math.min(1, (1 - queda) / (1 - UMBRAL)));
+    if (queda < UMBRAL) this.descubrir();
   }
 
   /** Suelta lo que queda de la lámina. La animación la hace el CSS. */

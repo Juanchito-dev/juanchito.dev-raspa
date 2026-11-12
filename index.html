@@ -49,7 +49,16 @@
           </p>
           <div class="portada-acciones">
             <button type="button" class="boton ir-armador">arma tu promoción</button>
-            <p class="nota">Gratis y sin crear cuenta.</p>
+            <ul class="pegatinas" aria-label="Gratis y sin crear cuenta">
+              <li>gratis</li>
+              <li>sin crear cuenta</li>
+            </ul>
+          </div>
+          <div class="cinta" aria-hidden="true">
+            <div class="cinta-rollo">
+              <span>raspa ★ gana ★ reclama por whatsapp ★ código que no se falsifica ★&nbsp;</span>
+              <span>raspa ★ gana ★ reclama por whatsapp ★ código que no se falsifica ★&nbsp;</span>
+            </div>
           </div>
         </div>
 
@@ -62,15 +71,16 @@
             <p>Esto mismo, con tus premios y tu WhatsApp.</p>
             <button type="button" class="boton ir-armador">arma la tuya</button>
           </div>
-          <button type="button" id="otra-vez" class="boton-linea" hidden>raspar otra</button>
+          <p id="marcador" class="marcador" hidden></p>
+          <button type="button" id="otra-vez" class="boton llama" hidden>raspar otra</button>
         </div>
 
         <section class="como" aria-labelledby="como-titulo">
           <h2 id="como-titulo" class="como-titulo">así <em class="firma">funciona</em></h2>
           <ol class="pasos">
-            <li><strong>Arma la promoción.</strong> Pones los premios, cuántos ganan y hasta cuándo. Te llevas un link.</li>
-            <li><strong>Compártelo.</strong> En tu bio, en tus estados de WhatsApp o en un QR en el mostrador.</li>
-            <li><strong>Tus clientes raspan.</strong> Quien gana te escribe por WhatsApp con su código, y tú lo revisas antes de entregar el premio.</li>
+            <li class="revela"><strong>Arma la promoción.</strong> Pones los premios, cuántos ganan y hasta cuándo. Te llevas un link.</li>
+            <li class="revela"><strong>Compártelo.</strong> En tu bio, en tus estados de WhatsApp o en un QR en el mostrador.</li>
+            <li class="revela"><strong>Tus clientes raspan.</strong> Quien gana te escribe por WhatsApp con su código, y tú lo revisas antes de entregar el premio.</li>
           </ol>
           <h3 class="como-sub">nadie puede hacer trampa</h3>
           <ul class="garantias">
@@ -85,7 +95,7 @@
             <h2 class="armador-titulo" tabindex="-1">arma la <em class="firma">tuya</em></h2>
           </div>
 
-          <fieldset class="bloque">
+          <fieldset class="bloque revela">
             <legend><span class="paso">01</span> tu negocio</legend>
             <label class="campo"><span>nombre</span><input name="negocio" maxlength="40" autocomplete="organization" placeholder="Ej: Panadería La Esquina" /></label>
             <label class="campo">
@@ -104,12 +114,16 @@
             </div>
           </fieldset>
 
-          <fieldset class="bloque">
+          <fieldset class="bloque revela">
             <legend><span class="paso">02</span> los premios</legend>
             <ol id="premios" class="premios"></ol>
             <button type="button" id="agregar-premio" class="boton-linea">+ otro premio</button>
             <label class="campo">
               <span>¿cuántos ganan?</span>
+              <span class="prob-vista" aria-hidden="true">
+                <b id="prob-num" class="prob-num"></b>
+                <span id="prob-fichas" class="fichas"></span>
+              </span>
               <input name="probabilidad" type="range" min="1" max="100" value="20" />
               <small id="prob-texto"></small>
             </label>
@@ -117,7 +131,7 @@
             <label class="campo"><span>la promoción termina el</span><input name="fecha" type="date" /></label>
           </fieldset>
 
-          <fieldset class="bloque">
+          <fieldset class="bloque revela">
             <legend><span class="paso">03</span> antes de publicarla</legend>
             <div class="legal">
               <p>
@@ -138,6 +152,7 @@
           <button type="submit" class="boton">crear mi promoción</button>
 
           <div id="resultado-armador" class="resultado" hidden>
+            <p class="resultado-titulo">¡lista! <em class="firma">a compartirla</em></p>
             <label class="campo">
               <span>el link para tus clientes: ponlo en tu bio, tus estados o un QR en el mostrador</span>
               <input id="link-jugar" readonly />
@@ -201,9 +216,17 @@
           <p class="ticket-negocio"></p>
           <p class="ticket-raspa">raspa y gana</p>
         </header>
-        <div class="ticket-zona">
-          <div class="ticket-premio" aria-live="polite"><p class="premio-arriba">…</p></div>
-          <canvas class="ticket-lamina" role="img" aria-label="Lámina plateada: ráspala con el dedo o usa el botón de abajo"></canvas>
+        <div class="ticket-marco">
+          <div class="ticket-zona">
+            <div class="ticket-premio" aria-live="polite"><p class="premio-arriba">…</p></div>
+            <canvas class="ticket-lamina" role="img" aria-label="Lámina plateada: ráspala con el dedo o usa el botón de abajo"></canvas>
+            <span class="ticket-pista" aria-hidden="true"></span>
+            <span class="ticket-flash" aria-hidden="true"></span>
+          </div>
+        </div>
+        <div class="ticket-medidor" aria-hidden="true">
+          <div class="medidor-riel"><span class="medidor-barra"></span></div>
+          <p class="medidor-texto">raspa con el dedo</p>
         </div>
         <footer class="ticket-pie"><span class="ticket-vence"></span></footer>
       </article>

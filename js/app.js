@@ -14,6 +14,11 @@ import { Lamina, pedirInclinacion } from "./lamina.js";
 import * as fx from "./efectos.js";
 
 const $ = (s, r = document) => r.querySelector(s);
+const quieto = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const FIESTA = ["#c6ff3d", "#ff3d9a", "#ffd23f", "#3df0ff", "#f2f0ea"];
+
+// con JS, lo que está más abajo aparece al llegar con el scroll (ver .revela)
+document.documentElement.classList.add("js");
 
 /** Colores de marca para la cabecera del ticket. Texto blanco encima: 4.5:1 o más. */
 export const COLORES = ["#c63a1f", "#2f6b3f", "#2a4bd7", "#6b2d6e"];
@@ -79,6 +84,7 @@ export async function montarTicket(caja, promo, { modo, token, alTerminar }) {
   $(".ticket-negocio", t).textContent = promo.n;
   // si es demo lo dice el MODO, no la fecha: una promo real puede durar años
   $(".ticket-vence", t).textContent = modo === "demo" ? "promoción de demostración" : `válido hasta el ${FECHA.format(new Date(promo.f + "T12:00:00Z"))}`;
+  caja.classList.remove("fiesta", "triste");
   caja.replaceChildren(t);
   const zona = $(".ticket-premio", t);
   const acciones = $("#t-acciones").content.firstElementChild.cloneNode(true);
@@ -100,6 +106,27 @@ export async function montarTicket(caja, promo, { modo, token, alTerminar }) {
     return pedido;
   };
 
+  // el medidor de "cuánto falta": la barra, el texto, los tics y el temblor
+  const barra = $(".medidor-barra", t);
+  const rotulo = $(".medidor-texto", t);
+  const pista = $(".ticket-pista", t);
+  let avance = 0;
+  let hito = 0;
+  let fin = false;
+  const avanzar = (a) => {
+    if (fin) return;
+    avance = a;
+    barra.style.setProperty("--p", a.toFixed(3));
+    const nuevo = Math.min(7, Math.floor(a * 8));
+    if (nuevo > hito) {
+      hito = nuevo;
+      fx.tic(nuevo);
+    }
+    const casi = a > 0.7 && a < 1;
+    t.classList.toggle("casi", casi);
+    rotulo.textContent = casi ? "¡ya casi!" : "sigue raspando…";
+  };
+
   const canvas = $(".ticket-lamina", t);
   const lamina = new Lamina(canvas, {
     color: COLORES[promo.c],
@@ -107,11 +134,14 @@ export async function montarTicket(caja, promo, { modo, token, alTerminar }) {
       fx.prepararSonido();
       pedirInclinacion();
       pedir();
+      pista.remove();
+      rotulo.textContent = "sigue raspando…";
     },
     alRaspar: (x, y, v) => {
-      fx.raspando(v);
-      if (v) fx.escamas(x, y, v);
+      fx.raspando(v, avance);
+      if (v) fx.escamas(x, y, v, COLORES[promo.c]);
     },
+    alAvanzar: avanzar,
     alDescubrir: async () => {
       fx.raspando(0);
       const r = resultado ?? (await pedir());
@@ -120,12 +150,22 @@ export async function montarTicket(caja, promo, { modo, token, alTerminar }) {
   });
 
   const terminar = (r, celebrar) => {
+    fin = true;
+    pista.remove();
+    t.classList.remove("casi");
     t.classList.add(r.gano ? "gano" : "perdio");
-    pintarAcciones(acciones, r, promo, modo);
+    caja.classList.add(r.gano ? "fiesta" : "triste");
+    barra.style.setProperty("--p", "1");
+    rotulo.textContent = r.gano ? "¡premio!" : r.error ? "no se pudo" : "sin premio esta vez";
+    pintarAcciones(acciones, r, promo, modo, celebrar);
     if (celebrar && r.gano) {
       const c = t.getBoundingClientRect();
-      fx.confeti(c.left + c.width / 2, c.top + c.height * 0.55, [COLORES[promo.c], "#c6ff3d", "#f2f0ea", "#ff5a1f"]);
+      fx.confeti(c.left + c.width / 2, c.top + c.height * 0.5, [COLORES[promo.c], ...FIESTA]);
+      fx.fanfarria();
       fx.vibrarPremio();
+    } else if (celebrar && !r.error) {
+      fx.quejido();
+      fx.vibrar(60);
     }
     alTerminar?.(r);
   };
@@ -194,12 +234,30 @@ function pintarResultado(zona, r, promo) {
   zona.replaceChildren(arriba, grande);
 }
 
-function pintarAcciones(caja, r, promo, modo) {
+/** El código cae letra por letra, como una tragamonedas que se va frenando. */
+function rodarCodigo(el, codigo) {
+  if (quieto) return void (el.textContent = codigo);
+  const LETRAS = "23456789ABCDEFGHJKMNPQRSTUVWXYZ";
+  el.setAttribute("aria-label", codigo);
+  let fijas = 0;
+  let vuelta = 0;
+  const reloj = setInterval(() => {
+    if (++vuelta % 3 === 0) {
+      fijas++;
+      if (codigo[fijas - 1] !== "-") fx.tic(fijas % 8);
+    }
+    el.textContent = [...codigo].map((c, i) => (i < fijas || c === "-" ? c : LETRAS[Math.floor(Math.random() * LETRAS.length)])).join("");
+    if (fijas >= codigo.length) clearInterval(reloj);
+  }, 40);
+}
+
+function pintarAcciones(caja, r, promo, modo, animar) {
   $(".descubrir", caja).hidden = true;
   if (!r.gano) return;
   const premio = $(".acciones-premio", caja);
   premio.hidden = false;
-  $(".codigo", caja).textContent = r.codigo;
+  if (animar) setTimeout(() => rodarCodigo($(".codigo", caja), r.codigo), 500);
+  $(".codigo", caja).textContent = animar && !quieto ? "·····-·····" : r.codigo;
   $(".codigo-nota", caja).textContent =
     modo === "demo" ? "Código de ejemplo: esto es una demostración." : "Muéstralo o envíalo para reclamar tu premio.";
   const wa = $(".reclamar", caja);
@@ -234,6 +292,25 @@ async function descargarCupon(promo, r) {
   x.beginPath();
   x.roundRect(70, 70, 940, 1210, 40);
   x.fill();
+  // rayos y estrellas detrás, recortados al papel
+  x.save();
+  x.clip();
+  x.translate(540, 440);
+  x.fillStyle = COLORES[promo.c];
+  x.globalAlpha = 0.09;
+  for (let i = 0; i < 16; i++) {
+    x.rotate(Math.PI / 8);
+    x.beginPath();
+    x.moveTo(0, 0);
+    x.lineTo(-90, -1100);
+    x.lineTo(90, -1100);
+    x.fill();
+  }
+  x.restore();
+  x.fillStyle = "#ffd23f";
+  x.font = '90px "Archivo"';
+  x.fillText("★", 170, 420);
+  x.fillText("★", 830, 500);
   x.textAlign = "center";
   x.fillStyle = COLORES[promo.c];
   x.font = '96px "Anton"';
@@ -309,9 +386,20 @@ function iniciarArmador() {
   $("#agregar-premio").addEventListener("click", () => {
     if ($("#premios").children.length < 6) filaPremio();
   });
+  // 20 fichitas: las doradas son, más o menos, las que ganan
+  const fichas = $("#prob-fichas");
+  for (let i = 0; i < 20; i++) fichas.append(document.createElement("i"));
+  const num = $("#prob-num");
   const leyenda = () => {
     const g = Number(f.probabilidad.value);
-    $("#prob-texto").textContent = `${g}% · más o menos 1 de cada ${Math.max(1, Math.round(100 / g))} gana`;
+    $("#prob-texto").textContent = `más o menos 1 de cada ${Math.max(1, Math.round(100 / g))} gana`;
+    num.textContent = `${g}%`;
+    num.classList.remove("pum");
+    void num.offsetWidth;
+    num.classList.add("pum");
+    f.probabilidad.style.setProperty("--p", String(g));
+    const doradas = Math.max(1, Math.round(g / 5));
+    [...fichas.children].forEach((x, i) => x.classList.toggle("gana", i < doradas));
   };
   f.probabilidad.addEventListener("input", leyenda);
   leyenda();
@@ -363,7 +451,9 @@ function iniciarArmador() {
       $("#link-verificar").value = `${base}#v=${token}`;
       $("#abrir-jugar").href = `${base}#p=${token}`;
       $("#resultado-armador").hidden = false;
-      $("#resultado-armador").scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
+      fx.lluvia([COLORES[promo.c], ...FIESTA], 110);
+      fx.fanfarria();
+      $("#resultado-armador").scrollIntoView({ behavior: quieto ? "auto" : "smooth", block: "start" });
     } catch (err) {
       aviso.textContent = err.message.startsWith("El servidor") || err.message.startsWith("Algo") ? err.message : "Sin conexión con el servidor. Intenta otra vez.";
       aviso.hidden = false;
@@ -406,6 +496,10 @@ function iniciarVerificar(token, promo) {
       if (!res.ok) throw new Error();
       salida.classList.add(d.valido ? "valido" : "invalido");
       salida.textContent = d.valido ? `Válido: ${d.premio}` : "No es un código de esta promoción.";
+      if (d.valido) {
+        fx.lluvia(FIESTA, 60);
+        fx.fanfarria();
+      } else fx.quejido();
     } catch {
       salida.textContent = "No se pudo revisar. Intenta otra vez.";
     }
@@ -416,6 +510,8 @@ function iniciarVerificar(token, promo) {
 
 const VISTAS = ["inicio", "jugar", "verificar", "roto"];
 let actual = null;
+let raspadas = 0;
+let premios = 0;
 
 function mostrar(v) {
   for (const x of VISTAS) $("#" + x).hidden = x !== v;
@@ -430,6 +526,7 @@ async function enrutar() {
     const promo = leerPromo(token);
     if (!promo) return mostrar("roto");
     document.body.style.setProperty("--marca", COLORES[promo.c]);
+    document.body.style.setProperty("--tinte", COLORES[promo.c]);
     if (h.startsWith("#v=")) {
       document.title = `verificar códigos — ${promo.n}`;
       mostrar("verificar");
@@ -450,14 +547,25 @@ async function enrutar() {
     return;
   }
   document.title = "raspa_ — raspa y gana para tu negocio";
+  document.body.style.removeProperty("--tinte");
   mostrar("inicio");
   const montarDemo = async () => {
     actual?.destruir();
     actual = await montarTicket($("#mesa-demo"), DEMO, {
       modo: "demo",
-      alTerminar: () => {
+      alTerminar: (r) => {
         $("#otra-vez").hidden = false;
         $("#puente").hidden = false;
+        // la cuenta de la demostración: sólo vive mientras la página está abierta
+        raspadas++;
+        if (r.gano) premios++;
+        const m = $("#marcador");
+        const b = document.createElement("b");
+        b.textContent = `${premios} de ${raspadas}`;
+        m.replaceChildren("premios en la demo: ", b);
+        m.hidden = true;
+        void m.offsetWidth;
+        m.hidden = false;
       },
     });
     $("#otra-vez").hidden = true;
@@ -484,11 +592,30 @@ $(".saltar").addEventListener("click", (e) => {
 // Ir al armador sin ancla (el hash es la promoción): se desplaza y lleva el foco al título.
 for (const b of document.querySelectorAll(".ir-armador")) {
   b.addEventListener("click", () => {
-    const quieto = matchMedia("(prefers-reduced-motion: reduce)").matches;
     $("#armador").scrollIntoView({ behavior: quieto ? "auto" : "smooth", block: "start" });
     $(".armador-titulo").focus({ preventScroll: true });
   });
 }
+
+// El audio sólo puede arrancar con un gesto: se prepara en el primer toque,
+// y los botones suenan al tocarlos.
+addEventListener("pointerdown", (e) => {
+  fx.prepararSonido();
+  if (e.target.closest?.(".boton, .boton-linea, .color, .quitar")) fx.pop();
+});
+
+// Aparecer al llegar con el scroll.
+const ojo = new IntersectionObserver(
+  (vistos) => {
+    for (const v of vistos) {
+      if (!v.isIntersecting) continue;
+      v.target.classList.add("visto");
+      ojo.unobserve(v.target);
+    }
+  },
+  { rootMargin: "0px 0px -8% 0px" },
+);
+for (const el of document.querySelectorAll(".revela")) ojo.observe(el);
 
 iniciarArmador();
 addEventListener("hashchange", enrutar);
